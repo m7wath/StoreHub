@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 import { CartService } from '../../../Services/cart.service';
-import { OrdersLocalService } from '../../../Services/orders-local.service';
+import { OrdersApiService } from '../../../Services/orders-api.service';
 import { CartItem } from '../../../interfaces/CarItem';
 
 @Component({
@@ -30,8 +30,8 @@ export class CheckoutComponent implements OnInit {
 
   constructor(
     private cart: CartService,
-    private orders: OrdersLocalService,
-    private router: Router
+    private router: Router,
+    private ordersApi: OrdersApiService
   ) {}
 
   ngOnInit(): void {
@@ -55,20 +55,31 @@ export class CheckoutComponent implements OnInit {
 
     this.placing = true;
 
-    const order = this.orders.create({
-      customerName: this.customerName.trim(),
-      email: this.email.trim(),
-      phone: this.phone.trim(),
-      address1: this.address1.trim(),
-      city: this.city.trim(),
-      notes: this.notes.trim(),
-      items: this.items,
-      subtotal: this.subtotal,
+    const dto = {
+      items: this.items.map(i => ({
+        productId: i.id,    
+        quantity: i.quantity  
+      }))
+    };
+
+    this.ordersApi.create(dto).subscribe({
+      next: () => {
+        this.cart.clear();
+        this.placing = false;
+
+        this.router.navigateByUrl(`/checkout/success`);
+      },
+      error: (err) => {
+        console.error(err);
+        this.placing = false;
+
+        if (err?.status === 401) {
+          this.error = 'Please login first.';
+          return;
+        }
+
+        this.error = 'Failed to place order. Please try again.';
+      }
     });
-
-    this.cart.clear();
-    this.placing = false;
-
-    this.router.navigateByUrl(`/checkout/success/${order.id}`);
   }
 }

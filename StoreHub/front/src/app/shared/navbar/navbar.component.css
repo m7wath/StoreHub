@@ -1,0 +1,7 @@
+.navbar .nav-link.active {
+  font-weight: 600;
+}
+
+.dropdown-menu {
+  min-width: 220px;
+}

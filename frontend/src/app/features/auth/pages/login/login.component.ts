@@ -17,7 +17,7 @@ export class LoginComponent {
   loading = false;
   error = '';
 
-  form!: FormGroup; ✅ مهم
+  form!: FormGroup; 
 
   constructor(
     private fb: FormBuilder,
@@ -25,7 +25,6 @@ export class LoginComponent {
     private auth: AuthService,
     private router: Router
   ) {
-    ✅ أنشئ الفورم هون
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(4)]],
@@ -51,7 +50,7 @@ export class LoginComponent {
         this.loading = false;
         this.auth.saveAuth(res.token, res.expiresAtUtc);
 
-        if (this.auth.isAdmin()) this.router.navigateByUrl('/admin');
+        if (this.auth.isAdmin) this.router.navigateByUrl('/admin');
         else this.router.navigateByUrl('/');
       },
       error: (err) => {

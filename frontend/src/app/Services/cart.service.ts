@@ -9,7 +9,6 @@ export class CartService {
   private itemsSubject = new BehaviorSubject<CartItem[]>(this.read());
   items$ = this.itemsSubject.asObservable();
 
-  ✅ لو حبيت تستدعيها لما تدخل صفحة cart (بتضمن قراءة آخر نسخة من localStorage)
   sync() {
     this.itemsSubject.next(this.read());
   }
@@ -67,9 +66,6 @@ export class CartService {
   clear() {
     this.commit([]);
   }
-
-  ================= helpers =================
-
   private commit(items: CartItem[]) {
     this.itemsSubject.next(items);
     this.write(items);
@@ -89,7 +85,7 @@ export class CartService {
     try {
       localStorage.setItem(this.storageKey, JSON.stringify(items));
     } catch {
-      ignore
+     
     }
   }
 }

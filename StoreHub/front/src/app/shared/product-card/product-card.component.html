@@ -1,0 +1,68 @@
+<div class="card h-100 shadow-sm product-card">
+
+  <!-- IMAGE -->
+  <img
+    class="product-img"
+    [src]="product.imageUrl"
+    [alt]="product.name"
+  />
+
+  <!-- BODY -->
+  <div class="card-body d-flex flex-column">
+
+    <div class="text-muted small">
+      {{ product.categoryName }}
+    </div>
+
+    <div class="fw-bold product-title mt-1">
+      {{ product.name }}
+    </div>
+
+    <div class="fw-bold price mt-1">
+      ${{ product.price }}
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="mt-auto d-flex justify-content-end gap-2 pt-2">
+
+      <!-- DETAILS -->
+      <a
+        class="btn btn-sm btn-outline-secondary"
+        [routerLink]="['/products', product.id]"
+      >
+        Details
+      </a>
+
+      <!-- CUSTOMER MODE -->
+      @if (!isAdminMode) {
+        <button
+          class="btn btn-sm btn-dark"
+          (click)="addToCart()"
+        >
+          Add to Cart
+        </button>
+      }
+
+      <!-- ADMIN MODE -->
+      @if (isAdminMode) {
+
+        <button
+          class="btn btn-sm btn-outline-primary"
+          (click)="onEdit()"
+        >
+          Edit
+        </button>
+
+        <button
+          class="btn btn-sm btn-outline-danger"
+          (click)="onRemove()"
+        >
+          Delete
+        </button>
+
+      }
+
+    </div>
+
+  </div>
+</div>

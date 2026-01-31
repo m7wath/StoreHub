@@ -1,0 +1,73 @@
+<div class="container py-4">
+
+  <div class="mb-4">
+    <h2 class="mb-1">Hi, {{ userName }} 👋</h2>
+    <p class="text-muted mb-0">
+      Here are your recent orders ({{ totalCount }} total)
+    </p>
+  </div>
+
+  <div *ngIf="loading" class="alert alert-info shadow-sm">
+    Loading your orders...
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger shadow-sm">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!loading && !error && orders.length === 0"
+       class="alert alert-secondary shadow-sm">
+    You haven't placed any orders yet.
+  </div>
+
+  <div *ngIf="orders.length > 0" class="card shadow-sm border-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th style="width: 90px">Order #</th>
+            <th>Date</th>
+            <th style="width: 140px">Total</th>
+            <th style="width: 120px">Items</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let o of orders">
+            <td class="fw-semibold">#{{ o.id }}</td>
+            <td>{{ o.orderDate | date:'medium' }}</td>
+            <td class="fw-semibold">${{ o.totalPrice }}</td>
+            <td>
+              <span class="badge bg-dark">
+                {{ o.itemsCount ?? 0 }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="orders.length > 0"
+       class="d-flex justify-content-between align-items-center mt-3">
+
+    <small class="text-muted">
+      Page {{ pageNumber }}
+    </small>
+
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-secondary btn-sm"
+              (click)="prev()"
+              [disabled]="!hasPrev">
+        ← Prev
+      </button>
+
+      <button class="btn btn-outline-dark btn-sm"
+              (click)="next()"
+              [disabled]="!hasNext">
+        Next →
+      </button>
+    </div>
+  </div>
+
+</div>

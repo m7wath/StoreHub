@@ -15,7 +15,6 @@ export class AuthService {
 
   private isBrowser: boolean;
 
-  ✅ لا تشغّل computeLoggedIn قبل ما تتأكد Browser
   private authStateSubject: BehaviorSubject<boolean>;
   authState$;
 
@@ -26,8 +25,6 @@ export class AuthService {
     this.authStateSubject = new BehaviorSubject<boolean>(initial);
     this.authState$ = this.authStateSubject.asObservable();
   }
-
-  ================= STORAGE =================
 
   saveAuth(token: string, expiresAtUtc: string) {
     if (!this.isBrowser) return;
@@ -48,8 +45,6 @@ export class AuthService {
     return localStorage.getItem(this.expKey);
   }
 
-  ================= LOGIN STATE =================
-
   get isLoggedIn(): boolean {
     if (!this.isBrowser) return false;
     return this.computeLoggedIn();
@@ -63,8 +58,6 @@ export class AuthService {
 
     this.authStateSubject.next(false);
   }
-
-  ================= ROLE =================
 
   get isAdmin(): boolean {
     if (!this.isLoggedIn) return false;
@@ -85,8 +78,6 @@ export class AuthService {
     );
   }
 
-  ================= JWT PAYLOAD =================
-
   private getPayload(): JwtPayload | null {
     const token = this.getToken();
     if (!token) return null;
@@ -101,8 +92,6 @@ export class AuthService {
       return null;
     }
   }
-
-  ================= INTERNAL HELPERS =================
 
   private computeLoggedIn(): boolean {
     const token = this.getToken();
@@ -126,4 +115,19 @@ export class AuthService {
 
     return true;
   }
+
+getUserName(): string | null {
+  const payload = this.getPayload();
+  if (!payload) return null;
+
+  return (
+    payload['Name'] ?? 
+    payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] ??
+    payload['unique_name'] ??
+    payload['name'] ??
+    payload['given_name'] ??
+    payload['email'] ??
+    null
+  );
+}
 }

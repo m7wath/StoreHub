@@ -13,10 +13,9 @@ export class CategoriesApiService {
   getList(value = '', pageNum = 1, pageSize = 1000): Observable<CategoryApi[]> {
     const params = new HttpParams()
       .set('value', value)
-      .set('pageNum', pageNum)      ✅ مهم: pageNum مش pageNumber
+      .set('pageNum', pageNum)      
       .set('pageSize', pageSize);
 
-    ✅ يدعم الحالتين: Array OR { items: [] }
     return this.http.get<any>(this.url, { params }).pipe(
       map((res) => {
         if (Array.isArray(res)) return res as CategoryApi[];

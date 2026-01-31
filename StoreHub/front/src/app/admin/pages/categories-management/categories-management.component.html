@@ -1,0 +1,193 @@
+<div class="container py-4">
+
+  <!-- Header -->
+  <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-3">
+    <div>
+      <h1 class="fw-bold mb-1">Categories Management</h1>
+      <div class="text-muted small">Admin UI (connected to backend)</div>
+    </div>
+
+    <button class="btn btn-dark" (click)="openAdd()">+ Add Category</button>
+  </div>
+
+  <!-- Filters Bar -->
+  <div class="card shadow-sm border-0 mb-3">
+    <div class="card-body">
+      <div class="row g-2 align-items-center">
+
+        <div class="col-12 col-md-4">
+          <input
+            class="form-control"
+            placeholder="Search..."
+            [(ngModel)]="search"
+            (ngModelChange)="onSearchChange()" />
+        </div>
+
+        <div class="col-12 col-md-3">
+          <!-- تركناه بالشكل فقط (مش مستخدم الآن) -->
+          <select class="form-select" disabled>
+            <option>All Status</option>
+          </select>
+        </div>
+
+        <div class="col-12 col-md-5 text-md-end">
+          <span class="text-muted small">
+            Showing {{ categories.length }} categories
+          </span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Form -->
+  @if (showAdd) {
+    <div class="card shadow-sm border-0 mb-3">
+      <div class="card-body">
+        <h5 class="mb-3 fw-semibold">Add Category</h5>
+
+        <div class="row g-2">
+          <div class="col-12 col-md-4">
+            <label class="form-label">Name</label>
+            <input
+              class="form-control"
+              [(ngModel)]="newCategory.name"
+              placeholder="Category name" />
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label class="form-label">Description</label>
+            <input
+              class="form-control"
+              [(ngModel)]="newCategory.description"
+              placeholder="Optional description" />
+          </div>
+
+          <div class="col-12 col-md-2">
+            <label class="form-label">Parent Id</label>
+            <input
+              type="number"
+              class="form-control"
+              [(ngModel)]="newCategory.parentCategoryId"
+              placeholder="null" />
+          </div>
+        </div>
+
+        <div class="d-flex gap-2 mt-3">
+          <button class="btn btn-primary" (click)="addCategory()">Save</button>
+          <button class="btn btn-outline-secondary" (click)="closeAdd()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Loading / Error -->
+  @if (loading) {
+    <div class="alert alert-info">Loading...</div>
+  } @else if (error) {
+    <div class="alert alert-danger">{{ error }}</div>
+  }
+
+  <!-- Table -->
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr class="text-muted small">
+          <th style="width: 90px;">ID</th>
+          <th>Name</th>
+          <th style="width: 160px;">Parent</th>
+
+          <!-- الأعمدة الوهمية (خليناها للتصميم) -->
+          <th style="width: 160px;">Type</th>
+          <th style="width: 120px;">Products</th>
+          <th style="width: 120px;">Status</th>
+          <th style="width: 140px;">Created</th>
+
+          <th style="width: 220px;" class="text-end">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (c of categories | paginate: { itemsPerPage: pageSize, currentPage: page }; track c.id) {
+          <tr>
+            <td class="text-muted">#{{ c.id }}</td>
+
+            <!-- Name + Description (Inline edit) -->
+            <td class="fw-semibold">
+              @if (editingId === c.id) {
+                <input
+                  class="form-control form-control-sm"
+                  [(ngModel)]="editModel.name"
+                  placeholder="Name" />
+
+                <div class="mt-1">
+                  <input
+                    class="form-control form-control-sm"
+                    [(ngModel)]="editModel.description"
+                    placeholder="Description (optional)" />
+                </div>
+              } @else {
+                {{ c.name }}
+                @if (c.description) {
+                  <div class="text-muted small">{{ c.description }}</div>
+                }
+              }
+            </td>
+
+            <!-- Parent (Inline edit) -->
+            <td class="text-muted">
+              @if (editingId === c.id) {
+                <input
+                  type="number"
+                  class="form-control form-control-sm"
+                  [(ngModel)]="editModel.parentCategoryId"
+                  placeholder="null" />
+              } @else {
+                {{ c.parentCategoryId ?? '-' }}
+              }
+            </td>
+
+            <!-- Dummy columns -->
+            <td class="text-muted">—</td>
+            <td class="text-muted">—</td>
+            <td class="text-muted">—</td>
+            <td class="text-muted">—</td>
+
+            <!-- Actions -->
+            <td class="text-end">
+              @if (editingId === c.id) {
+                <button class="btn btn-primary btn-sm me-1" (click)="saveEdit(c.id)">
+                  Save
+                </button>
+                <button class="btn btn-outline-secondary btn-sm me-1" (click)="cancelEdit()">
+                  Cancel
+                </button>
+              } @else {
+                <button class="btn btn-outline-primary btn-sm me-1" (click)="startEdit(c)">
+                  Edit
+                </button>
+                <button class="btn btn-outline-danger btn-sm" (click)="remove(c)">
+                  Delete
+                </button>
+              }
+            </td>
+          </tr>
+        }
+
+        @if (!loading && !error && categories.length === 0) {
+          <tr>
+            <td colspan="8" class="text-center text-muted py-4">
+              No categories found.
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="d-flex justify-content-center mt-3">
+    <pagination-controls (pageChange)="page = $event"></pagination-controls>
+  </div>
+
+</div>

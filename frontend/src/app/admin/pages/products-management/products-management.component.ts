@@ -54,7 +54,6 @@ export class ProductsManagementComponent implements OnInit {
   products: AdminProductVm[] = [];
   categories: CategoryApi[] = [];
 
-  form state
   mode: Mode = 'none';
   saving = false;
 
@@ -70,9 +69,6 @@ export class ProductsManagementComponent implements OnInit {
     this.loadProducts();
   }
 
-  -------------------------
-  Loaders
-  -------------------------
   loadCategories() {
     this.categoriesApi.getList('', 1, 1000).subscribe({
       next: (res) => (this.categories = res ?? []),
@@ -85,7 +81,6 @@ export class ProductsManagementComponent implements OnInit {
     this.loading = true;
     this.error = '';
 
-    نجيب كمية كبيرة مرة وحدة وبنعمل فلترة/صفحات بالفرونت (حاليًا)
     this.productsApi.getList('', 1, 2000).subscribe({
       next: (res) => {
         const list = (res ?? []).map((p: ProductApi) => this.toVm(p));
@@ -118,9 +113,6 @@ export class ProductsManagementComponent implements OnInit {
   };
 }
 
-  -------------------------
-  Filters / Helpers
-  -------------------------
   resetPage() {
     this.page = 1;
   }
@@ -143,18 +135,13 @@ export class ProductsManagementComponent implements OnInit {
       list = list.filter((p) => p.categoryId === cid);
     }
 
-    sort optional later
     return list;
   }
 
-  -------------------------
-  Form (Add/Edit)
-  -------------------------
   addNew() {
     this.mode = 'add';
     this.form = this.emptyForm();
 
-    لو عندك Categories، اختار أول واحدة افتراضيًا
     if (this.categories.length > 0) {
       this.form.categoryId = this.categories[0].id;
     }
@@ -168,7 +155,7 @@ export class ProductsManagementComponent implements OnInit {
       description: p.description ?? '',
       price: p.price,
       quantity: p.quantity,
-      categoryId: p.categoryId, بالباك الحالي Update ما بتستقبلها، بس نعرضها readonly
+      categoryId: p.categoryId, 
       imageUrl: p.imageUrl,
     };
   }
@@ -190,9 +177,6 @@ export class ProductsManagementComponent implements OnInit {
     };
   }
 
-  -------------------------
-  CRUD Calls
-  -------------------------
   save() {
     if (!this.form.name.trim()) {
       alert('Name is required');
@@ -210,7 +194,6 @@ export class ProductsManagementComponent implements OnInit {
     this.saving = true;
 
     if (this.mode === 'add') {
-      ✅ CreateProductDto حسب صورك: Name/Description/Price/Quantity/CategoryId
       const dto: any = {
         name: this.form.name.trim(),
         description: this.form.description?.trim() ?? '',
@@ -218,8 +201,6 @@ export class ProductsManagementComponent implements OnInit {
         quantity: this.form.quantity,
         categoryId: this.form.categoryId,
       };
-
-      لو أنت فعلًا أضفت imageUrl بالباك (واضح من تجربتك)، اتركه:
       if (this.form.imageUrl?.trim()) dto.imageUrl = this.form.imageUrl.trim();
 
       this.productsApi.create(dto).subscribe({
@@ -275,7 +256,6 @@ export class ProductsManagementComponent implements OnInit {
     });
   }
 
-  helper
   getCategoryNameById(id: number | null): string {
     if (!id) return 'Unknown';
     return this.categories.find((c) => c.id === id)?.name ?? 'Unknown';

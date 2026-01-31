@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { ProductsApiService } from '../../../Services/products-api.service';
 import { ProductApi } from '../../../Models/product-api.model';
+import { CartService } from '../../../Services/cart.service';
 
 type ProductDetailsVm = {
   id: number;
@@ -30,7 +31,9 @@ export class ProductDetailsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private location: Location,
-    private productsApi: ProductsApiService
+    private productsApi: ProductsApiService,
+    private cart: CartService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -50,11 +53,8 @@ export class ProductDetailsComponent implements OnInit {
           price: p.price,
           quantity: p.quantity ?? 0,
           categoryName: p.category?.name ?? 'Unknown',
-          imageUrl:
-            p.imageUrl ??
-            `https://picsum.photos/seed/storehub-${p.id}/900/600`,
-          description:
-            p.description ?? 'No description available.',
+          imageUrl: p.imageUrl ?? `https://picsum.photos/seed/storehub-${p.id}/900/600`,
+          description: p.description ?? 'No description available.',
         };
 
         this.loading = false;
@@ -69,5 +69,25 @@ export class ProductDetailsComponent implements OnInit {
 
   back(): void {
     this.location.back();
+  }
+
+
+  addToCart(): void {
+    if (!this.product) return;
+
+
+    if (this.product.quantity <= 0) return;
+
+    this.cart.add(
+      {
+        id: this.product.id,
+        name: this.product.name,
+        price: this.product.price,
+        imageUrl: this.product.imageUrl,
+      },
+      1
+    );
+
+    this.router.navigateByUrl('/cart');
   }
 }

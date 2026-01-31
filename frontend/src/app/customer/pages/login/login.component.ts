@@ -42,7 +42,7 @@ export class LoginComponent {
     this.error = '';
 
     const email = this.email.trim().toLowerCase();
-    const password = this.password; (إذا بدك trim: this.password.trim())
+    const password = this.password; 
 
     if (!email || !password.trim()) {
       this.error = 'Please enter email and password.';

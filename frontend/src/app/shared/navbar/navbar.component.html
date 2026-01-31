@@ -16,7 +16,6 @@
 
     <div class="collapse navbar-collapse" id="mainNav">
 
-      <!-- Left -->
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
           <a
@@ -41,10 +40,8 @@
         </li>
       </ul>
 
-     <!-- Right -->
 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
 
-  <!-- Admin Dashboard -->
   @if (auth.isLoggedIn && auth.isAdmin) {
     <li class="nav-item">
       <a class="nav-link" routerLink="/admin/dashboard" routerLinkActive="active">
@@ -53,7 +50,11 @@
     </li>
   }
 
-  <!-- Login -->
+  <li class="nav-item">
+  <a class="nav-link" routerLink="/profile">
+    My Profile
+  </a>
+</li>
   @if (!auth.isLoggedIn) {
     <li class="nav-item">
       <a class="nav-link" routerLink="/login" routerLinkActive="active">
@@ -61,7 +62,6 @@
       </a>
     </li>
   }
-  <!-- Logout -->
   @else {
     <li class="nav-item">
       <button
@@ -73,7 +73,6 @@
   }
 
 </ul>
-
 
     </div>
   </div>

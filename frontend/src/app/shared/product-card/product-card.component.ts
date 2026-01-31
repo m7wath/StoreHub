@@ -40,7 +40,6 @@ export class ProductCardComponent {
     return this.mode === 'admin';
   }
 
-  ✅ ADD TO CART (LocalStorage)
   addToCart() {
     this.cart.add({
       id: this.product.id,
@@ -49,11 +48,9 @@ export class ProductCardComponent {
       imageUrl: this.product.imageUrl
     }, 1);
 
-    يوديه مباشرة للكارت
     this.router.navigateByUrl('/cart');
   }
 
-  ADMIN ACTIONS
   onEdit() {
     this.edit.emit(this.product);
   }

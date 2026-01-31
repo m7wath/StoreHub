@@ -13,6 +13,7 @@ import { ProductsManagementComponent } from './admin/pages/products-management/p
 import { OrdersManagementComponent } from './admin/pages/orders-management/orders-management.component';
 import { CategoriesManagementComponent } from './admin/pages/categories-management/categories-management.component';
 import { adminGuard } from './core/guards/admin.guard';
+import { ProfileComponent } from './customer/pages/profile/profile.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -33,6 +34,7 @@ export const routes: Routes = [
 },
 { path: 'checkout', component: CheckoutComponent },
 { path: 'checkout/success/:id', component: CheckoutSuccessComponent },
+{ path: 'profile', component: ProfileComponent },
 
   { path: '**', redirectTo: '' },
 ];

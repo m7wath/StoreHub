@@ -22,7 +22,6 @@ export class ProductsApiService {
     return this.http.get<ProductApi>(`${this.url}/${id}`);
   }
 
-  ✅ CRUD for Admin
   create(dto: any): Observable<any> {
     return this.http.post(this.url, dto);
   }

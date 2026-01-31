@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { API_BASE_URL } from '../core/api.config';
 
+
 export type PagedResult<T> = {
   items: T[];
   totalCount: number;
@@ -27,7 +28,7 @@ export type OrderListApi = {
   userId: number;
   orderDate: string;
   totalPrice: number;
-  itemsCount?: number; ✅ الأفضل نخليه موجود من الباك
+  itemsCount?: number; 
 };
 
 @Injectable({ providedIn: 'root' })
@@ -36,7 +37,6 @@ export class OrdersApiService {
 
   constructor(private http: HttpClient) {}
 
-  ✅ Admin: list/search (PagedResult)
   search(value = '', pageNumber = 1, pageSize = 10) {
     const url =
       `${this.url}` +
@@ -47,8 +47,18 @@ export class OrdersApiService {
     return this.http.get<PagedResult<OrderListApi>>(url);
   }
 
-  ✅ Admin: details
   getById(id: number) {
     return this.http.get<OrderDetailsApi>(`${this.url}/${id}`);
   }
+  create(dto: {
+  items: { productId: number; quantity: number }[];
+}) {
+  return this.http.post(this.url, dto);
+}
+
+getMy(pageNumber = 1, pageSize = 10) {
+  const url =
+    `${this.url}/my?pageNumber=${pageNumber}&pageSize=${pageSize}`;
+  return this.http.get<PagedResult<OrderListApi>>(url);
+}
 }

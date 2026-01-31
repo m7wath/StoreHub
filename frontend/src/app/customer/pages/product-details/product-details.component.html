@@ -36,10 +36,18 @@
               {{ product.description }}
             </p>
 
-            <div class="d-flex gap-2">
-              <button class="btn btn-dark" disabled>Add to Cart (later)</button>
-              <button class="btn btn-outline-secondary" disabled>Buy Now (later)</button>
-            </div>
+       <div class="d-flex gap-2">
+  <button
+    class="btn btn-dark"
+    (click)="addToCart()"
+    [disabled]="!product || product.quantity <= 0">
+    Add to Cart
+  </button>
+
+  <button class="btn btn-outline-secondary" disabled>
+    Buy Now (later)
+  </button>
+</div>
 
             <hr />
 
