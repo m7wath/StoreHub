@@ -1,6 +1,0 @@
-@StoreHub_HostAddress = http://localhost:5213
-
-GET {{StoreHub_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
