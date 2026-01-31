@@ -1,13 +1,14 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+
+import { CartService } from '../../Services/cart.service';
 
 export interface ProductVm {
   id: number;
   name: string;
   price: number;
 
-  // الجديد (بدل category)
   categoryId: number | null;
   categoryName: string;
 
@@ -27,14 +28,32 @@ export class ProductCardComponent {
   @Input({ required: true }) product!: ProductVm;
   @Input() mode: CardMode = 'customer';
 
-  // Admin actions
   @Output() edit = new EventEmitter<ProductVm>();
   @Output() remove = new EventEmitter<number>();
+
+  constructor(
+    private cart: CartService,
+    private router: Router
+  ) {}
 
   get isAdminMode(): boolean {
     return this.mode === 'admin';
   }
 
+  ✅ ADD TO CART (LocalStorage)
+  addToCart() {
+    this.cart.add({
+      id: this.product.id,
+      name: this.product.name,
+      price: this.product.price,
+      imageUrl: this.product.imageUrl
+    }, 1);
+
+    يوديه مباشرة للكارت
+    this.router.navigateByUrl('/cart');
+  }
+
+  ADMIN ACTIONS
   onEdit() {
     this.edit.emit(this.product);
   }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StoreHub.Dtos.Category;
@@ -27,6 +28,7 @@ namespace StoreHub.Controllers
             return Ok(result);
 
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult>AddAsync(CreateCategoryDto dto)
         {
@@ -40,6 +42,7 @@ namespace StoreHub.Controllers
           await  _categoryService.AddAsync(category);
             return Ok();
         }
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id:long}")]
         public async Task<IActionResult>UpdateAsync (long id,UpdateCategoryDto dto)
         {
@@ -57,7 +60,7 @@ namespace StoreHub.Controllers
             return Ok();
 
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(long id)
         {

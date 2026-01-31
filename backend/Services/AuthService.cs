@@ -54,8 +54,6 @@ public class AuthService(StoreHubDbContext _db, ITokenService _tokenService) : I
         if (string.IsNullOrWhiteSpace(password))
             throw new ArgumentException("Password is required.");
 
-        // Simple SHA256 hash (OK for learning).
-        // In real production: use ASP.NET Identity or BCrypt/PBKDF2.
         using var sha = SHA256.Create();
         var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(password));
         return Convert.ToBase64String(bytes);

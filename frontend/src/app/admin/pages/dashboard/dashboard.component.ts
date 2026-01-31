@@ -1,7 +1,27 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+
 import { AdminApiService } from '../../../Services/admin-api.service';
+
+type StatsVm = {
+  title: string;
+  value: number;
+  hint: string;
+};
+
+type QuickVm = {
+  title: string;
+  desc: string;
+  link: string;
+};
+
+type DashboardStatsApi = {
+  products: number;
+  orders: number;
+  categories: number;
+  users: number;
+};
 
 @Component({
   selector: 'app-dashboard',
@@ -11,42 +31,81 @@ import { AdminApiService } from '../../../Services/admin-api.service';
   styleUrl: './dashboard.component.css',
 })
 export class DashboardComponent implements OnInit {
+
   loading = false;
   error = '';
 
-  stats = [
-    { title: 'Products', value: 0, hint: 'Total products in catalog' },
-    { title: 'Orders', value: 0, hint: 'Orders in system' },
-    { title: 'Categories', value: 0, hint: 'Available categories' },
-    { title: 'Users', value: 0, hint: 'Registered users' },
-  ];
+  stats: StatsVm[] = [];
+  quick: QuickVm[] = [];
 
-  quick = [
-    { title: 'Manage Products', desc: 'Create / edit / delete products', link: '/admin/products' },
-    { title: 'Manage Categories', desc: 'Create / edit categories', link: '/admin/categories' },
-    { title: 'Manage Orders', desc: 'View and update orders', link: '/admin/orders' },
-  ];
-
-  constructor(private adminApi: AdminApiService) {}
+constructor(private api: AdminApiService) {}
 
   ngOnInit(): void {
-    this.loading = true;
+    this.loadStats();
+  }
 
-    this.adminApi.getStats().subscribe({
-      next: (x) => {
+  loadStats() {
+    this.loading = true;
+    this.error = '';
+
+    this.api.getStats().subscribe({
+      next: (res: DashboardStatsApi) => {
+
+        // ===== Stats Cards =====
         this.stats = [
-          { title: 'Products', value: x.products, hint: 'Total products in catalog' },
-          { title: 'Orders', value: x.orders, hint: 'Orders in system' },
-          { title: 'Categories', value: x.categories, hint: 'Available categories' },
-          { title: 'Users', value: x.users, hint: 'Registered users' },
+          {
+            title: 'Products',
+            value: res.products ?? 0,
+            hint: 'Total products in catalog'
+          },
+          {
+            title: 'Orders',
+            value: res.orders ?? 0,
+            hint: 'Orders in system'
+          },
+          {
+            title: 'Categories',
+            value: res.categories ?? 0,
+            hint: 'Available categories'
+          },
+          {
+            title: 'Users',
+            value: res.users ?? 0,
+            hint: 'Registered users'
+          }
         ];
+
+        // ===== Quick Actions =====
+        this.quick = [
+          {
+            title: 'Manage Products',
+            desc: 'Create / edit / delete products',
+            link: '/admin/products'
+          },
+          {
+            title: 'Manage Categories',
+            desc: 'Create / edit categories',
+            link: '/admin/categories'
+          },
+          {
+            title: 'Manage Orders',
+            desc: 'View and update orders',
+            link: '/admin/orders'
+          },
+          {
+            title: 'Manage Users',
+            desc: 'Edit roles & reset passwords',
+            link: '/admin/users'
+          }
+        ];
+
         this.loading = false;
       },
-      error: (err) => {
-        console.error(err);
+
+      error: () => {
         this.error = 'Failed to load dashboard stats';
         this.loading = false;
-      },
+      }
     });
   }
 }

@@ -1,4 +1,5 @@
-﻿using StoreHub.Dtos.Order;
+﻿using StoreHub.Common;
+using StoreHub.Dtos.Order;
 using StoreHub.Models;
 using StoreHub.Services.Base;
 
@@ -10,4 +11,9 @@ public interface IOrderService : IBaseService<Order>
     public DateTime CreateDateTime();
     Task<List<OrderListDto>> GetMyOrdersAsync(long userId, int pageNumber = 1, int pageSize = 10);
     Task<Order?> GetWithDetailsAsync(long id);
+
+    Task<PagedResult<OrderListDto>> SearchPagedAsync(string value = "", int pageNumber = 1, int pageSize = 10);
+
+
+
 }

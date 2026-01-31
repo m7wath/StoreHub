@@ -1,21 +1,33 @@
 <form (ngSubmit)="login()" class="d-grid gap-3">
 
+  @if (error) {
+    <div class="alert alert-danger py-2 mb-0">
+      {{ error }}
+    </div>
+  }
+
   <div>
     <label class="form-label">Email</label>
     <input
       class="form-control"
       type="email"
       [(ngModel)]="email"
-      name="email" />
+      name="email"
+      autocomplete="username"
+      [disabled]="loading" />
   </div>
 
   <div>
     <label class="form-label d-flex justify-content-between align-items-center">
       <span>Password</span>
-      <button type="button"
-              class="btn btn-sm btn-link"
-              (click)="togglePassword()">
-        Show
+
+      <button
+        type="button"
+        class="btn btn-sm btn-link p-0"
+        (click)="togglePassword()"
+        [disabled]="loading"
+      >
+        @if (showPassword) { Hide } @else { Show }
       </button>
     </label>
 
@@ -23,17 +35,18 @@
       class="form-control"
       [type]="showPassword ? 'text' : 'password'"
       [(ngModel)]="password"
-      name="password" />
+      name="password"
+      autocomplete="current-password"
+      [disabled]="loading" />
   </div>
 
-<button
-  type="submit"
-  class="btn btn-dark w-100"
-  [disabled]="loading"
->
-  Sign In
-</button>
-
+  <button
+    type="submit"
+    class="btn btn-dark w-100"
+    [disabled]="loading"
+  >
+    @if (loading) { Signing in... } @else { Sign In }
+  </button>
 
 </form>
 

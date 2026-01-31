@@ -20,7 +20,8 @@ type AdminProductVm = {
   categoryId: number | null;
   categoryName: string;
   imageUrl: string;
-  createdAt?: string; // optional
+  createdAt?: string; 
+  
 };
 
 type ProductForm = {
@@ -29,8 +30,8 @@ type ProductForm = {
   description: string;
   price: number;
   quantity: number;
-  categoryId: number | null; // only used in ADD (حسب الباك الحالي)
-  imageUrl: string; // only used in ADD لو DTO عندك يدعمه، وإلا تجاهله
+  categoryId: number | null;
+  imageUrl: string; 
 };
 
 @Component({
@@ -41,7 +42,6 @@ type ProductForm = {
   styleUrl: './products-management.component.css',
 })
 export class ProductsManagementComponent implements OnInit {
-  // table + filters
   page = 1;
   pageSize = 10;
 
@@ -54,7 +54,7 @@ export class ProductsManagementComponent implements OnInit {
   products: AdminProductVm[] = [];
   categories: CategoryApi[] = [];
 
-  // form state
+  form state
   mode: Mode = 'none';
   saving = false;
 
@@ -70,13 +70,14 @@ export class ProductsManagementComponent implements OnInit {
     this.loadProducts();
   }
 
-  // -------------------------
-  // Loaders
-  // -------------------------
+  -------------------------
+  Loaders
+  -------------------------
   loadCategories() {
     this.categoriesApi.getList('', 1, 1000).subscribe({
       next: (res) => (this.categories = res ?? []),
       error: () => console.log('Failed to load categories'),
+      
     });
   }
 
@@ -84,7 +85,7 @@ export class ProductsManagementComponent implements OnInit {
     this.loading = true;
     this.error = '';
 
-    // نجيب كمية كبيرة مرة وحدة وبنعمل فلترة/صفحات بالفرونت (حاليًا)
+    نجيب كمية كبيرة مرة وحدة وبنعمل فلترة/صفحات بالفرونت (حاليًا)
     this.productsApi.getList('', 1, 2000).subscribe({
       next: (res) => {
         const list = (res ?? []).map((p: ProductApi) => this.toVm(p));
@@ -98,25 +99,28 @@ export class ProductsManagementComponent implements OnInit {
     });
   }
 
-  private toVm(p: ProductApi): AdminProductVm {
-    return {
-      id: p.id,
-      name: p.name,
-      description: p.description ?? '',
-      price: p.price,
-      quantity: p.quantity ?? 0,
-      categoryId: p.categoryId ?? null,
-      categoryName: p.category?.name ?? 'Unknown',
-      imageUrl:
-        p.imageUrl ??
-        `https://picsum.photos/seed/storehub-admin-${p.id}/800/500`,
-      createdAt: (p as any).createdAt ? String((p as any).createdAt) : undefined,
-    };
-  }
+ private toVm(p: ProductApi): AdminProductVm {
+  const apiCategoryName = (p as any).categoryName as string | undefined;
 
-  // -------------------------
-  // Filters / Helpers
-  // -------------------------
+  return {
+    id: p.id,
+    name: p.name,
+    description: p.description ?? '',
+    price: p.price,
+    quantity: p.quantity ?? 0,
+    categoryId: p.categoryId ?? null,
+    categoryName: apiCategoryName ?? this.getCategoryNameById(p.categoryId ?? null),
+
+    imageUrl:
+      p.imageUrl ??
+      `https://picsum.photos/seed/storehub-admin-${p.id}/800/500`,
+    createdAt: (p as any).createdAt ? String((p as any).createdAt) : undefined,
+  };
+}
+
+  -------------------------
+  Filters / Helpers
+  -------------------------
   resetPage() {
     this.page = 1;
   }
@@ -139,18 +143,18 @@ export class ProductsManagementComponent implements OnInit {
       list = list.filter((p) => p.categoryId === cid);
     }
 
-    // sort optional later
+    sort optional later
     return list;
   }
 
-  // -------------------------
-  // Form (Add/Edit)
-  // -------------------------
+  -------------------------
+  Form (Add/Edit)
+  -------------------------
   addNew() {
     this.mode = 'add';
     this.form = this.emptyForm();
 
-    // لو عندك Categories، اختار أول واحدة افتراضيًا
+    لو عندك Categories، اختار أول واحدة افتراضيًا
     if (this.categories.length > 0) {
       this.form.categoryId = this.categories[0].id;
     }
@@ -164,7 +168,7 @@ export class ProductsManagementComponent implements OnInit {
       description: p.description ?? '',
       price: p.price,
       quantity: p.quantity,
-      categoryId: p.categoryId, // بالباك الحالي Update ما بتستقبلها، بس نعرضها readonly
+      categoryId: p.categoryId, بالباك الحالي Update ما بتستقبلها، بس نعرضها readonly
       imageUrl: p.imageUrl,
     };
   }
@@ -186,9 +190,9 @@ export class ProductsManagementComponent implements OnInit {
     };
   }
 
-  // -------------------------
-  // CRUD Calls
-  // -------------------------
+  -------------------------
+  CRUD Calls
+  -------------------------
   save() {
     if (!this.form.name.trim()) {
       alert('Name is required');
@@ -206,7 +210,7 @@ export class ProductsManagementComponent implements OnInit {
     this.saving = true;
 
     if (this.mode === 'add') {
-      // ✅ CreateProductDto حسب صورك: Name/Description/Price/Quantity/CategoryId
+      ✅ CreateProductDto حسب صورك: Name/Description/Price/Quantity/CategoryId
       const dto: any = {
         name: this.form.name.trim(),
         description: this.form.description?.trim() ?? '',
@@ -215,7 +219,7 @@ export class ProductsManagementComponent implements OnInit {
         categoryId: this.form.categoryId,
       };
 
-      // لو أنت فعلًا أضفت imageUrl بالباك (واضح من تجربتك)، اتركه:
+      لو أنت فعلًا أضفت imageUrl بالباك (واضح من تجربتك)، اتركه:
       if (this.form.imageUrl?.trim()) dto.imageUrl = this.form.imageUrl.trim();
 
       this.productsApi.create(dto).subscribe({
@@ -271,7 +275,7 @@ export class ProductsManagementComponent implements OnInit {
     });
   }
 
-  // helper
+  helper
   getCategoryNameById(id: number | null): string {
     if (!id) return 'Unknown';
     return this.categories.find((c) => c.id === id)?.name ?? 'Unknown';

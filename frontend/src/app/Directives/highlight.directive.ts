@@ -5,10 +5,10 @@ import { Directive, ElementRef, HostListener, Input, Renderer2 } from '@angular/
   standalone: true,
 })
 export class HighlightDirective {
-  // اللون الأساسي اللي بنحطه من HTML: appHighlight="..."
+  اللون الأساسي اللي بنحطه من HTML: appHighlight="..."
   @Input('appHighlight') baseColor = 'lightyellow';
 
-  // لون وقت الهوفر
+  لون وقت الهوفر
   @Input() hoverColor = 'gold';
 
   constructor(private el: ElementRef, private renderer: Renderer2) {}

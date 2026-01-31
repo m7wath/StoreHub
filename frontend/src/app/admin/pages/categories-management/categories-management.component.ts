@@ -39,7 +39,7 @@ editModel = {
 
   categories: CategoryApi[] = [];
 
-  // فورم الإضافة (بسيط)
+
   showAdd = false;
   newCategory = {
     name: '',
@@ -57,7 +57,6 @@ editModel = {
     this.loading = true;
     this.error = '';
 
-    // عندك بالسيرفس getList(value, pageNum, pageSize)
     this.categoriesApi.getList(this.search, 1, 1000).subscribe({
       next: (res) => {
         this.categories = res ?? [];
@@ -80,7 +79,7 @@ editModel = {
     this.loadCategories();
   }
 
-  // ✅ ADD
+
   openAdd() {
     this.showAdd = true;
   }
@@ -113,7 +112,6 @@ editModel = {
     });
   }
 
-  // ✅ DELETE
   remove(c: CategoryApi) {
     const ok = confirm(`Delete category #${c.id}?`);
     if (!ok) return;

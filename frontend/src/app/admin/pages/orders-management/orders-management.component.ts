@@ -1,14 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgxPaginationModule } from 'ngx-pagination';
 
+import { OrdersApiService, OrderListApi, OrderDetailsApi } from '../../../Services/orders-api.service';
+
 type AdminOrderVm = {
   id: number;
-  customerName: string;
+  customerText: string; 
   itemsCount: number;
   total: number;
-  status: 'Pending' | 'Paid' | 'Shipped' | 'Cancelled';
   createdAt: string;
 };
 
@@ -19,65 +20,94 @@ type AdminOrderVm = {
   templateUrl: './orders-management.component.html',
   styleUrl: './orders-management.component.css',
 })
-export class OrdersManagementComponent {
+export class OrdersManagementComponent implements OnInit {
   search = '';
-  status = 'all';
   page = 1;
   pageSize = 10;
 
-  orders: AdminOrderVm[] = Array.from({ length: 75 }).map((_, i) => {
-    const id = i + 1;
+  loading = false;
+  error = '';
 
-    const names = ['Mohammed', 'Ahmad', 'Ali', 'Omar', 'Khaled', 'Sara', 'Lina', 'Noor', 'Yousef', 'Hanan'];
-    const customerName = names[i % names.length] + ` #${(id % 20) + 1}`;
+  orders: AdminOrderVm[] = [];
+  totalCount = 0;
 
-    const itemsCount = (id % 6) + 1;
-    const total = 50 * itemsCount + (id % 10) * 25;
+  viewing = false;
+  viewError = '';
+  viewOrder?: OrderDetailsApi;
 
-    const statuses: AdminOrderVm['status'][] = ['Pending', 'Paid', 'Shipped', 'Cancelled'];
-    const status = statuses[id % statuses.length];
+  constructor(private ordersApi: OrdersApiService) {}
 
-    const createdAt = this.fakeDate(id);
-
-    return { id, customerName, itemsCount, total, status, createdAt };
-  });
+  ngOnInit(): void {
+    this.load();
+  }
 
   resetPage() {
     this.page = 1;
   }
 
-  get filtered(): AdminOrderVm[] {
-    const s = this.search.trim().toLowerCase();
+  load() {
+  this.loading = true;
+  this.error = '';
 
-    let list = [...this.orders];
+  this.ordersApi.search(this.search, this.page, this.pageSize).subscribe({
+    next: (res) => {
+      const list = res?.items ?? [];
 
-    if (this.status !== 'all') {
-      list = list.filter(o => o.status === this.status);
+      this.totalCount = res?.totalCount ?? 0;
+
+      this.orders = list.map(o => ({
+        id: o.id,
+        customerText: `User #${o.userId}`,
+        itemsCount: o.itemsCount ?? 0,
+        total: o.totalPrice,
+        createdAt: (o.orderDate ?? '').slice(0, 10) || '',
+      }));
+
+      this.loading = false;
+    },
+    error: (err) => {
+      console.error(err);
+      this.error = 'Failed to load orders';
+      this.loading = false;
     }
+  });
+}
 
-    if (s) {
-      list = list.filter(o =>
-        String(o.id).includes(s) ||
-        o.customerName.toLowerCase().includes(s)
-      );
-    }
-
-    list.sort((a, b) => b.id - a.id);
-    return list;
+  onSearchChange() {
+    this.resetPage();
+    this.load();
   }
 
-  view(o: AdminOrderVm) {
-    alert(`UI only: View Order #${o.id}`);
+  onPageChange(p: number) {
+    this.page = p;
+    this.load();
   }
 
-  changeStatus(o: AdminOrderVm, newStatus: AdminOrderVm['status']) {
-    this.orders = this.orders.map(x => (x.id === o.id ? { ...x, status: newStatus } : x));
-  }
+  view(id: number) {
+    this.viewing = true;
+    this.viewError = '';
+    this.viewOrder = undefined;
 
-  private fakeDate(id: number): string {
-    const day = (id % 28) + 1;
-    const month = ((id % 12) + 1);
-    const yyyy = 2025;
-    return `${yyyy}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    this.ordersApi.getById(id).subscribe({
+      next: (x) => {
+        this.viewOrder = x;
+        this.viewing = false;
+
+        const lines = (x.items ?? []).map(i => {
+          const name = i.product?.name ?? `ProductId=${i.productId}`;
+          return `- ${name} x${i.quantity}`;
+        });
+
+        alert(
+          `Order #${x.id}\nUserId: ${x.userId}\nTotal: $${x.totalPrice}\nDate: ${x.orderDate}\n\nItems:\n${lines.join('\n')}`
+        );
+      },
+      error: (err) => {
+        console.error(err);
+        this.viewError = 'Failed to load order details';
+        this.viewing = false;
+        alert(this.viewError);
+      }
+    });
   }
 }

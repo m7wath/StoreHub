@@ -45,7 +45,7 @@
 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
 
   <!-- Admin Dashboard -->
-  @if (auth.isLoggedIn() && auth.isAdmin()) {
+  @if (auth.isLoggedIn && auth.isAdmin) {
     <li class="nav-item">
       <a class="nav-link" routerLink="/admin/dashboard" routerLinkActive="active">
         Admin
@@ -54,7 +54,7 @@
   }
 
   <!-- Login -->
-  @if (!auth.isLoggedIn()) {
+  @if (!auth.isLoggedIn) {
     <li class="nav-item">
       <a class="nav-link" routerLink="/login" routerLinkActive="active">
         Login

@@ -1,0 +1,22 @@
+<div class="container py-5">
+  <div class="card border-0 shadow-sm">
+    <div class="card-body p-4 p-lg-5 text-center">
+
+      <div class="fs-1 mb-2">✅</div>
+      <h3 class="fw-bold">Order placed!</h3>
+
+      @if (order) {
+        <p class="text-muted mb-1">Order ID: <span class="fw-semibold">{{ order.id }}</span></p>
+        <p class="text-muted mb-3">Total: <span class="fw-semibold">${{ order.subtotal }}</span></p>
+      } @else {
+        <p class="text-muted mb-3">Order not found (local storage cleared?).</p>
+      }
+
+      <div class="d-flex justify-content-center gap-2">
+        <a routerLink="/products" class="btn btn-dark">Continue Shopping</a>
+        <a routerLink="/cart" class="btn btn-outline-secondary">Go to Cart</a>
+      </div>
+
+    </div>
+  </div>
+</div>

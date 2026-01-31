@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using StoreHub.Common;
 using StoreHub.Data;
 using StoreHub.Dtos.Order;
 using StoreHub.Models;
@@ -50,8 +51,10 @@ public class OrderService(StoreHubDbContext _dbContext) : BaseService<Order>(_db
     {
         if (pageNumber < 1) pageNumber = 1;
         if (pageSize < 1) pageSize = 10;
+        if (pageSize > 100) pageSize = 100;
 
-        return await _dbContext.Orders
+        return await _dbContext.Set<Order>()
+            .AsNoTracking()
             .Where(o => o.UserId == userId)
             .OrderByDescending(o => o.OrderDate)
             .Skip((pageNumber - 1) * pageSize)
@@ -72,5 +75,37 @@ public class OrderService(StoreHubDbContext _dbContext) : BaseService<Order>(_db
                .Include(o => o.User)
                .Include(o => o.Items)
                .FirstOrDefaultAsync(o => o.Id == id);
+    }
+
+    public async Task<PagedResult<OrderListDto>> SearchPagedAsync(
+    string value = "",
+    int pageNumber = 1,
+    int pageSize = 10)
+    {
+        value ??= "";
+
+        var query = _dbContext.Orders
+            .Where(o => value == "" || o.Id.ToString().Contains(value));
+
+        var total = await query.CountAsync();
+
+        var items = await query
+            .OrderByDescending(o => o.Id)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Select(o => new OrderListDto
+            {
+                Id = o.Id,
+                OrderDate = o.OrderDate,
+                TotalPrice = o.TotalPrice,
+                ItemsCount = o.Items.Count
+            })
+            .ToListAsync();
+
+        return new PagedResult<OrderListDto>
+        {
+            Items = items,
+            TotalCount = total
+        };
     }
 }

@@ -54,9 +54,11 @@ public class OrdersController(IOrderService _orderService) : ControllerBase
     [HttpGet]
     public async Task<IActionResult> SearchAsync(string value = "", int pageNumber = 1, int pageSize = 10)
     {
-        var result = await _orderService.SearchAsync(value, pageNumber, pageSize);
+        var result = await _orderService.SearchPagedAsync(value, pageNumber, pageSize);
         return Ok(result);
     }
+
+
     [Authorize]
     [HttpGet("my")]
     public async Task<IActionResult> MyOrders(int pageNumber = 1, int pageSize = 10)

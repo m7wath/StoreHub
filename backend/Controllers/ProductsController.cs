@@ -25,7 +25,7 @@ public class ProductsController(IProductService _productService) : ControllerBas
     [HttpGet]
     public async Task<IActionResult>SearchAsync(string value = "", int pageNumber = 1, int pageSize = 10)
     {
-        var result = await _productService.SearchAsync(value, pageNumber, pageSize);
+        var result = await _productService.NewSearchAsync(value, pageNumber, pageSize);
         return Ok(result);
     }
     [Authorize(Roles = "Admin")]

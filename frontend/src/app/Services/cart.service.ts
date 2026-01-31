@@ -4,14 +4,15 @@ import { CartItem } from '../interfaces/CarItem';
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
-  private itemsSubject = new BehaviorSubject<CartItem[]>([
-    // Dummy items عشان تشوف شكل الجدول
-    { id: 10, name: 'Gaming Product 10', price: 150, imageUrl: 'https://picsum.photos/seed/storehub-10/600/400', quantity: 1 },
-    { id: 12, name: 'Gaming Product 12', price: 170, imageUrl: 'https://picsum.photos/seed/storehub-12/600/400', quantity: 2 },
-    { id: 15, name: 'Gaming Product 15', price: 200, imageUrl: 'https://picsum.photos/seed/storehub-15/600/400', quantity: 1 },
-  ]);
+  private storageKey = 'storehub_cart';
 
+  private itemsSubject = new BehaviorSubject<CartItem[]>(this.read());
   items$ = this.itemsSubject.asObservable();
+
+  ✅ لو حبيت تستدعيها لما تدخل صفحة cart (بتضمن قراءة آخر نسخة من localStorage)
+  sync() {
+    this.itemsSubject.next(this.read());
+  }
 
   getItems(): CartItem[] {
     return this.itemsSubject.value;
@@ -28,36 +29,67 @@ export class CartService {
   add(item: Omit<CartItem, 'quantity'>, qty: number = 1) {
     const items = [...this.getItems()];
     const existing = items.find(x => x.id === item.id);
+
     if (existing) existing.quantity += qty;
     else items.push({ ...item, quantity: qty });
-    this.itemsSubject.next(items);
+
+    this.commit(items);
   }
 
   inc(id: number) {
     const items = [...this.getItems()];
     const it = items.find(x => x.id === id);
     if (!it) return;
+
     it.quantity += 1;
-    this.itemsSubject.next(items);
+    this.commit(items);
   }
 
   dec(id: number) {
     const items = [...this.getItems()];
     const it = items.find(x => x.id === id);
     if (!it) return;
+
     it.quantity -= 1;
+
     if (it.quantity <= 0) {
-      this.itemsSubject.next(items.filter(x => x.id !== id));
+      this.commit(items.filter(x => x.id !== id));
       return;
     }
-    this.itemsSubject.next(items);
+
+    this.commit(items);
   }
 
   remove(id: number) {
-    this.itemsSubject.next(this.getItems().filter(x => x.id !== id));
+    this.commit(this.getItems().filter(x => x.id !== id));
   }
 
   clear() {
-    this.itemsSubject.next([]);
+    this.commit([]);
+  }
+
+  ================= helpers =================
+
+  private commit(items: CartItem[]) {
+    this.itemsSubject.next(items);
+    this.write(items);
+  }
+
+  private read(): CartItem[] {
+    try {
+      const raw = localStorage.getItem(this.storageKey);
+      const data = raw ? JSON.parse(raw) : [];
+      return Array.isArray(data) ? data : [];
+    } catch {
+      return [];
+    }
+  }
+
+  private write(items: CartItem[]) {
+    try {
+      localStorage.setItem(this.storageKey, JSON.stringify(items));
+    } catch {
+      ignore
+    }
   }
 }

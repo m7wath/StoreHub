@@ -6,6 +6,11 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthApiService } from '../../../Services/auth-api.service';
 import { AuthService } from '../../../Services/auth.service';
 
+type LoginDto = {
+  email: string;
+  password: string;
+};
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -23,7 +28,7 @@ export class LoginComponent {
 
   constructor(
     private authApi: AuthApiService,
-    private auth: AuthService,
+    public auth: AuthService,
     private router: Router
   ) {}
 
@@ -32,36 +37,41 @@ export class LoginComponent {
   }
 
   login(): void {
+    if (this.loading) return;
+
     this.error = '';
-    console.log('login fired');
-    if (!this.email.trim() || !this.password.trim()) {
+
+    const email = this.email.trim().toLowerCase();
+    const password = this.password; (إذا بدك trim: this.password.trim())
+
+    if (!email || !password.trim()) {
       this.error = 'Please enter email and password.';
       return;
     }
 
     this.loading = true;
 
-    const dto = {
-      email: this.email.trim(),
-      password: this.password,
-    };
+    const dto: LoginDto = { email, password };
 
     this.authApi.login(dto).subscribe({
-      next: (res) => {
-        this.loading = false;
+  next: (res: any) => {
+    this.loading = false;
 
-        this.auth.saveAuth(res.token, res.expiresAtUtc);
+    this.auth.saveAuth(res.token, res.expiresAtUtc);
 
-        // Admin -> dashboard
-        if (this.auth.isAdmin()) this.router.navigateByUrl('/admin');
-        else this.router.navigateByUrl('/');
-      },
-      error: (err) => {
-        this.loading = false;
-        this.error =
-          err?.error?.message ||
-          'Login failed. Please check your email/password.';
-      },
-    });
+    if (this.auth.isAdmin) this.router.navigateByUrl('/admin/dashboard');
+    else this.router.navigateByUrl('/');
+  },
+  error: (err: any) => {
+    this.loading = false;
+
+    if (err?.status === 401) {
+      this.error = err?.error?.message ?? 'Invalid email or password.';
+      return;
+    }
+
+    this.error = err?.error?.message ?? 'Login failed. Please try again.';
+  },
+});
   }
 }

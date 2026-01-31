@@ -45,7 +45,19 @@ public class BaseService <T>(StoreHubDbContext _dbContext) : IBaseService<T>
 
     public async Task<List<T>> SearchAsync(string value = "", int pageNumber = 1, int pageSize = 10)
     {
-        //todo pagination
-        return await _dbContext.Set<T>().Where(x => x.Name.Contains(value)).ToListAsync();
+        if (pageNumber < 1) pageNumber = 1;
+        if (pageSize < 1) pageSize = 10;
+        if (pageSize > 100) pageSize = 100; 
+
+        value ??= "";
+
+        return await _dbContext.Set<T>()
+            .AsNoTracking()
+            .Where(x => value == "" || x.Name.Contains(value))
+            .OrderByDescending(x => x.Id)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
     }
+
 }
