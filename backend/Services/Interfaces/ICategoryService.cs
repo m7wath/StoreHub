@@ -5,5 +5,6 @@ namespace StoreHub.Services.Interfaces
 {
     public interface ICategoryService : IBaseService<Category>
     {
+        Task<bool> ProtectedDeleteAsync(long id);
     }
 }

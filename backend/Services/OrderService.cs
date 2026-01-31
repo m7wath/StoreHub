@@ -48,24 +48,29 @@ public class OrderService(StoreHubDbContext _dbContext) : BaseService<Order>(_db
 
    public async Task<List<OrderListDto>> GetMyOrdersAsync(long userId, int pageNumber = 1, int pageSize = 10)
     {
-        return await _dbContext.Set<Order>()
-     .Where(o => o.UserId == userId)               
-     .OrderByDescending(o => o.OrderDate)          
-     .Select(o => new OrderListDto                 
-     {
-         Id = o.Id,
-         OrderDate = o.OrderDate,
-         TotalPrice = o.TotalPrice,
-         ItemsCount = o.Items.Count
-     })
-     .ToListAsync();
+        if (pageNumber < 1) pageNumber = 1;
+        if (pageSize < 1) pageSize = 10;
+
+        return await _dbContext.Orders
+            .Where(o => o.UserId == userId)
+            .OrderByDescending(o => o.OrderDate)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Select(o => new OrderListDto
+            {
+                Id = o.Id,
+                OrderDate = o.OrderDate,
+                TotalPrice = o.TotalPrice,
+                ItemsCount = o.Items.Count
+            })
+            .ToListAsync();
     }
 
     public async Task<Order?> GetWithDetailsAsync(long id)
     {
         return await _dbContext.Orders
-            .Include(o => o.User)
-            .Include(o => o.Items)
-            .FirstOrDefaultAsync(o => o.Id == id);
+               .Include(o => o.User)
+               .Include(o => o.Items)
+               .FirstOrDefaultAsync(o => o.Id == id);
     }
 }

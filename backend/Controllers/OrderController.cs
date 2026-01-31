@@ -16,6 +16,7 @@ namespace StoreHub.Controllers;
 [ApiController]
 public class OrdersController(IOrderService _orderService) : ControllerBase
 {
+    [Authorize(Roles = "Admin")]
     [HttpGet("{id:long}")]
     public async Task<IActionResult>GetAsync (long id)
     {
@@ -49,6 +50,7 @@ public class OrdersController(IOrderService _orderService) : ControllerBase
         await _orderService.AddAsync(order);
         return Ok();
     }
+    [Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<IActionResult> SearchAsync(string value = "", int pageNumber = 1, int pageSize = 10)
     {
@@ -57,17 +59,18 @@ public class OrdersController(IOrderService _orderService) : ControllerBase
     }
     [Authorize]
     [HttpGet("my")]
-    public async Task<IActionResult> MyOrders()
+    public async Task<IActionResult> MyOrders(int pageNumber = 1, int pageSize = 10)
     {
-        var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (string.IsNullOrWhiteSpace(userIdStr))
-            return Unauthorized();
-        var userId = long.Parse(userIdStr!);
+        var userIdString = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(userIdString)) return Unauthorized();
 
-        var result = await _orderService.GetMyOrdersAsync(userId);
+        var userId = long.Parse(userIdString);
+
+        var result = await _orderService.GetMyOrdersAsync(userId, pageNumber, pageSize);
         return Ok(result);
     }
-    [HttpDelete]
+    [Authorize(Roles = "Admin")]
+    [HttpDelete("{id:long}")]
     public async Task<IActionResult> DeleteAsync(long id)
     {
         var result = await _orderService.DeleteAsync(id);

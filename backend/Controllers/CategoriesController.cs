@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using StoreHub.Dtos.Category;
 using StoreHub.Models;
 using StoreHub.Services;
@@ -60,9 +61,20 @@ namespace StoreHub.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(long id)
         {
-            var result = await _categoryService.DeleteAsync(id);
-            if (!result) return NotFound();
-            return NoContent();
+            try
+            {
+                var result = await _categoryService.ProtectedDeleteAsync(id);
+                if (!result) return NotFound();
+                return NoContent();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(ex.Message);
+            }
+            catch (DbUpdateException)
+            {
+                return Conflict("Cannot delete: category is referenced by other records.");
+            }
         }
     }
 }

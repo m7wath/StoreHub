@@ -1,0 +1,13 @@
+.stat {
+  border-radius: 14px;
+}
+
+.action {
+  border-radius: 14px;
+  color: inherit;
+  transition: transform 120ms ease;
+}
+
+.action:hover {
+  transform: translateY(-2px);
+}

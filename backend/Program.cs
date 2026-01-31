@@ -17,6 +17,18 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular",
+        policy =>
+        {
+            policy
+                .WithOrigins("http://localhost:4200")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
 builder.Services.AddAutoMapper(typeof(StoreHubProfile));
 
 // Swagger
@@ -64,11 +76,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseCors("AllowAngular");
 // ✅ لازم Authentication قبل Authorization
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
+await StoreHub.Data.AdminSeeder.SeedAsync(app.Services, app.Configuration);
 app.Run();

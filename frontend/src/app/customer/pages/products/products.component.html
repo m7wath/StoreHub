@@ -1,1 +1,71 @@
-<p>products works!</p>
+<div class="container py-3">
+
+  <!-- Toolbar -->
+  <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+    <h2 class="m-0 me-3">Products</h2>
+
+    <input
+      class="form-control"
+      style="max-width: 260px;"
+      placeholder="Search..."
+      [(ngModel)]="search"
+      (ngModelChange)="resetPage()" />
+
+    <!-- ✅ Categories from backend -->
+    <select
+      class="form-select"
+      style="max-width: 180px;"
+      [(ngModel)]="selectedCategoryId"
+      (ngModelChange)="resetPage()">
+      <option value="all">All Categories</option>
+
+      @for (c of categories; track c.id) {
+        <option [value]="c.id">{{ c.name }}</option>
+      }
+    </select>
+
+    <select
+      class="form-select ms-auto"
+      style="max-width: 220px;"
+      [(ngModel)]="sort"
+      (ngModelChange)="resetPage()">
+      <option value="default">Sort: Default</option>
+      <option value="priceAsc">Price: Low to High</option>
+      <option value="priceDesc">Price: High to Low</option>
+      <option value="nameAsc">Name: A to Z</option>
+    </select>
+  </div>
+
+  @if (loading) {
+    <div class="alert alert-secondary">Loading...</div>
+  } @else if (error) {
+    <div class="alert alert-danger">{{ error }}</div>
+  } @else {
+
+    @if (filteredProducts.length === 0) {
+      <div class="alert alert-info">No products found.</div>
+    } @else {
+
+      <div class="row g-3">
+        @for (p of (filteredProducts | paginate: { id: 'products', itemsPerPage: pageSize, currentPage: page }); track p.id) {
+          <div class="col-12 col-sm-6 col-lg-4">
+            <app-product-card [product]="p" mode="customer"></app-product-card>
+          </div>
+        }
+      </div>
+
+      <div class="d-flex justify-content-center mt-4">
+        <pagination-controls
+          id="products"
+          [maxSize]="7"
+          [directionLinks]="true"
+          [autoHide]="true"
+          (pageChange)="page = $event">
+        </pagination-controls>
+      </div>
+
+    }
+
+  }
+
+</div>

@@ -1,1 +1,92 @@
-<p>cart works!</p>
+<div class="container py-4">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h2 class="m-0">Cart</h2>
+
+    @if (items.length > 0) {
+      <button class="btn btn-outline-danger btn-sm" (click)="clear()">Clear Cart</button>
+    }
+  </div>
+
+  @if (items.length === 0) {
+    <div class="alert alert-info">
+      Your cart is empty.
+      <a routerLink="/products" class="ms-2">Go shopping</a>
+    </div>
+  } @else {
+
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th style="width: 90px;">Item</th>
+            <th>Product</th>
+            <th class="text-end" style="width: 130px;">Price</th>
+            <th class="text-center" style="width: 180px;">Qty</th>
+            <th class="text-end" style="width: 150px;">Total</th>
+            <th style="width: 70px;"></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (p of items; track p.id) {
+            <tr>
+              <td>
+                <img
+                  class="thumb"
+                  [src]="p.imageUrl || 'https://picsum.photos/seed/storehub-cart/200/200'"
+                  [alt]="p.name">
+              </td>
+
+              <td>
+                <div class="fw-semibold">{{ p.name }}</div>
+                <small class="text-muted">ID: {{ p.id }}</small>
+              </td>
+
+              <td class="text-end">
+                ${{ p.price }}
+              </td>
+
+              <td class="text-center">
+                <div class="btn-group" role="group">
+                  <button class="btn btn-outline-secondary btn-sm" (click)="dec(p.id)">-</button>
+                  <button class="btn btn-outline-secondary btn-sm" disabled>{{ p.quantity }}</button>
+                  <button class="btn btn-outline-secondary btn-sm" (click)="inc(p.id)">+</button>
+                </div>
+              </td>
+
+              <td class="text-end fw-semibold">
+                ${{ lineTotal(p) }}
+              </td>
+
+              <td class="text-end">
+                <button class="btn btn-outline-danger btn-sm" (click)="remove(p.id)">x</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="d-flex justify-content-end mt-3">
+      <div class="summary card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <span class="text-muted">Subtotal</span>
+            <span class="fw-semibold">${{ total() }}</span>
+          </div>
+
+          <hr>
+
+          <button class="btn btn-dark w-100" disabled>
+            Checkout (later)
+          </button>
+
+          <small class="text-muted d-block mt-2">
+            Checkout رح نعملها بعد الربط مع الباك اند.
+          </small>
+        </div>
+      </div>
+    </div>
+
+  }
+</div>

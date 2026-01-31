@@ -30,7 +30,7 @@ namespace StoreHub.Services
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
             var creds = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
 
-            var expiresAtUtc = DateTime.UtcNow.AddHours(2);
+            var expiresAtUtc = DateTime.UtcNow.AddDays(365);
 
             var jwt = new JwtSecurityToken(
                 issuer: issuer,
