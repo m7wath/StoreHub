@@ -11,7 +11,6 @@ namespace StoreHub.Services
     {
         public (string token, DateTime expiresAtUtc) GenerateToken(User user)
         {
-            // Read JWT settings from appsettings.json
             var issuer = _config["Jwt:Issuer"];
             var audience = _config["Jwt:Audience"];
             var key = _config["Jwt:Key"];
@@ -21,7 +20,7 @@ namespace StoreHub.Services
 
             var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), // USER ID
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.Role, user.Role),
             new Claim("Name", user.Name)

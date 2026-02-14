@@ -34,7 +34,7 @@ public class ProductsController(IProductService _productService) : ControllerBas
     {
         var result = await _productService.DeleteAsync(id);
         if (result == false) return NotFound();
-        return NoContent(); // delete usually returns nocontent instead of ok
+        return NoContent(); 
 
     }
     [Authorize(Roles = "Admin")]

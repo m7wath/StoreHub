@@ -27,7 +27,6 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddAutoMapper(typeof(StoreHubProfile));
 
-// ✅ Swagger مرة وحدة فقط + JWT
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {

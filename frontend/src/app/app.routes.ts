@@ -14,6 +14,7 @@ import { OrdersManagementComponent } from './admin/pages/orders-management/order
 import { CategoriesManagementComponent } from './admin/pages/categories-management/categories-management.component';
 import { adminGuard } from './core/guards/admin.guard';
 import { ProfileComponent } from './customer/pages/profile/profile.component';
+import { RegisterComponent } from './customer/pages/register/register.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -21,6 +22,7 @@ export const routes: Routes = [
   { path: 'products/:id', component: ProductDetailsComponent },
   { path: 'cart', component: CartComponent },
   { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
 
 { path: 'admin/dashboard', component: DashboardComponent, canActivate: [adminGuard] },
 { path: 'admin/products', component: ProductsManagementComponent, canActivate: [adminGuard] },
